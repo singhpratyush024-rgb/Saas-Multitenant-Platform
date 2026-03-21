@@ -12,6 +12,40 @@ services:
     depends_on:
       - db
       - redis
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  worker:
+    build: .
+    container_name: saas_worker
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: celery -A app.worker.celery_app.celery_app worker --loglevel=info --concurrency=4
+
+  beat:
+    build: .
+    container_name: saas_beat
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+      - worker
+    command: celery -A app.worker.celery_app.celery_app beat --loglevel=info
+
+  flower:
+    build: .
+    container_name: saas_flower
+    env_file:
+      - .env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - worker
+    command: celery -A app.worker.celery_app.celery_app flower --port=5555
 
   db:
     image: postgres:15

@@ -9,9 +9,12 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 os.environ["TESTING"] = "true"
 os.environ["REDIS_URL"] = "redis://localhost:6379"
 os.environ["EMAIL_ENABLED"] = "false"
+os.environ["DATABASE_URL"] = "postgresql+asyncpg://postgres:Pratyushcr7@localhost:5432/saas_db"
+os.environ["SYNC_DATABASE_URL"] = "postgresql://postgres:Pratyushcr7@localhost:5432/saas_db"
 
 from app.main import app
 from app.models.tenant import Tenant

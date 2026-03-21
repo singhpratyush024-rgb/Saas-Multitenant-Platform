@@ -10,6 +10,8 @@ from app.api.routes import members
 from app.api.routes import tasks
 from app.api.routes import uploads
 from app.api.routes import search
+from app.api.routes import task_status
+from app.api.routes import billing
 
 router = APIRouter()
 
@@ -22,3 +24,5 @@ router.include_router(tasks.router)
 router.include_router(uploads.router)
 router.include_router(search.router)
 router.include_router(search.audit_router)
+router.include_router(task_status.router)
+router.include_router(billing.router)

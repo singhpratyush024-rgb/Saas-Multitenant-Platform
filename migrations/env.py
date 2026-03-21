@@ -25,6 +25,7 @@ from app.models.project import Project
 from app.models.task import Task
 from app.models.file_upload import FileUpload
 from app.models.audit_log import AuditLog
+from app.models.plan import Plan
 
 target_metadata = Base.metadata
 

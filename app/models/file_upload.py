@@ -1,9 +1,8 @@
 # app/models/file_upload.py
 
-from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger
+from sqlalchemy import Column, Integer, String, ForeignKey, BigInteger, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy import DateTime
 
 from app.models.base import Base
 
@@ -26,7 +25,6 @@ class FileUpload(Base):
         nullable=True,
     )
 
-    # Optional FK — file attached to a project
     project_id = Column(
         Integer,
         ForeignKey("projects.id", ondelete="CASCADE"),
@@ -38,8 +36,6 @@ class FileUpload(Base):
     stored_filename = Column(String, nullable=False, unique=True)
     content_type = Column(String, nullable=False)
     size_bytes = Column(BigInteger, nullable=False)
-
-    # Storage path — works for local disk and S3
     storage_path = Column(String, nullable=False)
 
     created_at = Column(
@@ -51,4 +47,4 @@ class FileUpload(Base):
     # ── relationships ─────────────────────────────────────────────
     tenant = relationship("Tenant")
     uploader = relationship("User")
-    project = relationship("Project")
+    project = relationship("Project", overlaps="files")   # fixes SAWarning

@@ -13,11 +13,25 @@ from app.core.exception_handlers import register_exception_handlers
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Starting application")
+
+    # Redis check
     try:
         await redis_client.ping()
         print("Redis connected successfully")
     except Exception as e:
         print("Redis connection failed:", e)
+
+    # Seed plans
+    try:
+        from app.core.database import get_db
+        from app.services.seed_plans import seed_plans
+        async for db in get_db():
+            await seed_plans(db)
+            print("Plans seeded successfully")
+            break
+    except Exception as e:
+        print("Plan seeding failed:", e)
+
     yield
     print("Shutting down")
 
@@ -28,14 +42,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# ── Exception handlers (must be before middleware) ──────────────────
+# ── Exception handlers ───────────────────────────────────────────
 register_exception_handlers(app)
 
-# ── Middleware ───────────────────────────────────────────────────────
+# ── Middleware ───────────────────────────────────────────────────
 app.add_middleware(TenantMiddleware)
 app.add_middleware(RateLimitMiddleware)
 
-# ── Routes ──────────────────────────────────────────────────────────
+# ── Routes ──────────────────────────────────────────────────────
 app.include_router(router)
 
 

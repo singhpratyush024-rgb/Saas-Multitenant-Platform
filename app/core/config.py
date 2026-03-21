@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # ── Redis ─────────────────────────────────────────────────────
     REDIS_URL: str
 
-    # ── Email (Mailtrap for dev, real SMTP for prod) ──────────────
+    # ── Email ─────────────────────────────────────────────────────
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
     MAIL_FROM: str
@@ -25,6 +25,10 @@ class Settings(BaseSettings):
 
     # ── App ───────────────────────────────────────────────────────
     APP_BASE_URL: str = "http://localhost:8000"
+
+    # ── Stripe ────────────────────────────────────────────────────
+    STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str = ""   # set after creating webhook in Stripe dashboard
 
     model_config = ConfigDict(
         env_file=".env",
