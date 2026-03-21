@@ -14,7 +14,7 @@ from app.core.config import settings
 from app.core.exceptions import ForbiddenException, NotFoundException
 from app.dependencies.auth import get_current_user
 from app.dependencies.tenant import get_current_tenant
-from app.dependencies.permission import owner_only
+from app.dependencies.permission import owner_only, admin_or_owner
 from app.models.tenant import Tenant
 from app.models.plan import Plan
 from app.models.user import User
@@ -131,9 +131,19 @@ async def billing_status(
         "trial_active": trial_active,
         "trial_ends_at": tenant.trial_ends_at.isoformat() if tenant.trial_ends_at else None,
         "trial_days_left": trial_days_left,
+        "trial": {
+            "active": trial_active,
+            "ends_at": tenant.trial_ends_at.isoformat() if tenant.trial_ends_at else None,
+            "days_left": trial_days_left,
+        } if trial_active else None,
         "grace_active": grace_active,
         "grace_period_ends_at": tenant.grace_period_ends_at.isoformat() if tenant.grace_period_ends_at else None,
         "grace_days_left": grace_days_left,
+        "grace_period": {
+            "active": grace_active,
+            "ends_at": tenant.grace_period_ends_at.isoformat() if tenant.grace_period_ends_at else None,
+            "days_left": grace_days_left,
+        } if grace_active else None,
     })
 
 
@@ -182,7 +192,7 @@ async def get_subscription(
 @router.get("/invoices")
 async def list_invoices(
     tenant: Tenant = Depends(get_current_tenant),
-    current_user: User = Depends(owner_only()),
+    current_user: User = Depends(admin_or_owner()),
     limit: int = 10,
 ):
     if not tenant.stripe_customer_id:
@@ -281,6 +291,12 @@ async def usage_summary(
                 "limit": limits.get("max_storage_mb", 0),
                 "percent": _pct(storage_mb, limits.get("max_storage_mb", 0)),
             },
+        },
+        "features": {
+            "can_use_api": limits.get("can_use_api", False),
+            "max_members": limits.get("max_members", 0),
+            "max_projects": limits.get("max_projects", 0),
+            "max_storage_mb": limits.get("max_storage_mb", 0),
         },
     })
 
