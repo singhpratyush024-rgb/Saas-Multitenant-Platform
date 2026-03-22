@@ -26,7 +26,7 @@ PLANS = [
     {
         "key": "starter",
         "name": "Starter",
-        "stripe_price_id": "prod_UB0exhsGIUPcvY",   # replace with real Stripe price id
+        "stripe_price_id": "price_1TDlYmGuRIylCVDbuNRBD2Pr",   # replace with real Stripe price id
         "price_usd_cents": 2900,          # $29/month
         "limits": {
             "max_members": 10,
@@ -40,7 +40,7 @@ PLANS = [
     {
         "key": "pro",
         "name": "Pro",
-        "stripe_price_id": "prod_UB0fgpqBKsYmqZ",       # replace with real Stripe price id
+        "stripe_price_id": "price_1TDlYmGuRIylCVDb05kU5tUW",       # replace with real Stripe price id
         "price_usd_cents": 9900,          # $99/month
         "limits": {
             "max_members": 50,
@@ -54,7 +54,7 @@ PLANS = [
     {
         "key": "enterprise",
         "name": "Enterprise",
-        "stripe_price_id": "prod_UB0hxg9wIr46jA",
+        "stripe_price_id": "price_1TDlYoGuRIylCVDbvXVysv1o",
         "price_usd_cents": 29900,         # $299/month
         "limits": {
             "max_members": -1,            # -1 = unlimited

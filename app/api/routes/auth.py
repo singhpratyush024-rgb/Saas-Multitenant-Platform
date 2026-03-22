@@ -129,6 +129,33 @@ async def refresh_token(refresh_token: str):
     return {"access_token": new_access_token, "token_type": "bearer"}
 
 
+
+
+# ------------------------------------------------------------------
+# Change Password
+# ------------------------------------------------------------------
+from pydantic import BaseModel
+from app.dependencies.auth import get_current_user
+from app.core.exceptions import UnauthorizedException
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+@router.post("/change-password")
+async def change_password(
+    data: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if not verify_password(data.current_password, current_user.hashed_password):
+        raise UnauthorizedException(detail="Current password is incorrect")
+
+    current_user.hashed_password = hash_password(data.new_password)
+    await db.commit()
+    return {"message": "Password updated successfully"}
+
+
 # ------------------------------------------------------------------
 # Logout (Token Blacklist)
 # ------------------------------------------------------------------

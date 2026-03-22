@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 SECRET_KEY = "supersecret"
 ALGORITHM = "HS256"
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],

@@ -69,6 +69,49 @@ async def get_my_profile(
     )
 
 
+
+
+# ── PATCH /members/me — update own profile ────────────────────────────────────
+
+from pydantic import BaseModel, EmailStr
+
+class ProfileUpdateRequest(BaseModel):
+    email: EmailStr | None = None
+
+@router.patch("/me", response_model=ProfileResponse)
+async def update_my_profile(
+    data: ProfileUpdateRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if data.email and data.email != current_user.email:
+        # Check email not taken in same tenant
+        existing = await db.execute(
+            select(User).where(
+                User.email == data.email,
+                User.tenant_id == current_user.tenant_id,
+                User.id != current_user.id,
+            )
+        )
+        if existing.scalar_one_or_none():
+            raise ConflictException(detail="Email already in use")
+        current_user.email = data.email
+
+    await db.commit()
+    await db.refresh(current_user)
+
+    permissions = await _get_user_permissions(current_user, db)
+    return ProfileResponse(
+        id=current_user.id,
+        email=current_user.email,
+        role=current_user.role,
+        role_id=current_user.role_id,
+        is_active=current_user.is_active,
+        tenant_id=current_user.tenant_id,
+        permissions=sorted(permissions),
+    )
+
+
 # ── GET /members — list all members with pagination ───────────────────────────
 
 @router.get("/", response_model=PaginatedMembers)
