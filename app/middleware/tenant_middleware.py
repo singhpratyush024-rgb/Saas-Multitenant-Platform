@@ -22,6 +22,10 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
     async def dispatch(self, request: Request, call_next):
 
+        # Pass OPTIONS requests through — these are CORS preflight checks
+        if request.method == "OPTIONS":
+            return await call_next(request)
+
         if request.url.path in EXEMPT_PATHS:
             return await call_next(request)
 

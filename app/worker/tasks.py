@@ -4,6 +4,8 @@ import os
 import logging
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
+import app.models 
+from app.models import __init__ 
 
 from celery import shared_task
 from sqlalchemy import create_engine, select, delete, func
